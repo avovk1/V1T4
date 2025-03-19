@@ -4,7 +4,7 @@ import json
 import random
 
 class Interactions(commands.Cog):
-    def __init__(self, bot) -> None:
+    def __init__(self, bot:commands.bot.Bot) -> None:
         with open("Data/interactions.json", "rt") as file:
             self.data = json.load(file)
         self.bot = bot
@@ -14,5 +14,5 @@ class Interactions(commands.Cog):
         pass
 
 
-def setup(bot) -> None:
+def setup(bot:commands.bot.Bot) -> None:
     bot.add_cog(Interactions(bot))

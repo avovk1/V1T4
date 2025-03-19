@@ -4,7 +4,7 @@ import json
 import random
 
 class Administration(commands.Cog):
-    def __init__(self, bot:commands.Bot) -> None:
+    def __init__(self, bot:commands.bot.Bot) -> None:
         with open("Data/administration.json", "rt") as file:
             self.data = json.load(file)
         self.bot:commands.bot = bot
@@ -14,5 +14,5 @@ class Administration(commands.Cog):
         pass
 
 
-def setup(bot) -> None:
+def setup(bot:commands.bot.Bot) -> None:
     bot.add_cog(Administration(bot))

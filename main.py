@@ -34,7 +34,7 @@ bot = commands.Bot(command_prefix=config["prefix"], intents = discord.Intents.al
 def cog_loader(name:Optional[str] = None) -> str:
     if name:
         try:
-            bot.load_extension("Modules/"+name)
+            bot.load_extension("Modules."+name)
             string = strings["load"]["success"].format(name = name)
         except BaseException as error:
             string = strings["load"]["failure"].format(name = name, error = error)
@@ -43,7 +43,7 @@ def cog_loader(name:Optional[str] = None) -> str:
     continuous_string = ""
     for i in config["modules"]:
         try:
-            bot.load_extension(i)
+            bot.load_extension("Modules."+i)
             string = strings["load"]["success"].format(name = name)
         except BaseException as error:
             string = strings["load"]["failure"].format(name = name, error = error)
@@ -74,7 +74,7 @@ def cog_unloader(name:Optional[str] = None) -> str:
 @bot.command(name="load", hidden=True, aliases=["l"])
 async def   load(ctx, name:Optional[str] = None):
     if ctx.author.id in config["administrators"]:
-        return await ctx.reply(cog_unloader(name))
+        return await ctx.reply(cog_loader(name))
 
 @bot.command(name="unload", hidden=True, aliases=["u"])
 async def unload(ctx, name:Optional[str] = None):
