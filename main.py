@@ -29,7 +29,7 @@ with open("Data/config.json", "rt") as file:
 with open("main_strings.json", "rt") as file:
     strings = json.load(file)
 
-bot = commands.Bot(command_prefix=config["prefix"], intents = discord.Intents.all())
+bot:commands.Bot = commands.Bot(command_prefix=config["prefix"], intents = discord.Intents.all())
 
 def cog_loader(name:Optional[str] = None) -> str:
     if name:
