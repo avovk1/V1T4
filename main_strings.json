@@ -1,0 +1,10 @@
+{
+    "load": {
+        "success": "{name} loaded!",
+        "failure": "{name} cannot be loaded - error text:\n\t{error}"
+    },
+    "unload": {
+        "success": "{name} unloaded!",
+        "failure": "{name} cannot be unloaded - error text:\n\t{error}"
+    }
+}
