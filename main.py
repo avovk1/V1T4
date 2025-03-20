@@ -1,10 +1,9 @@
+import sys
 import json
-import os
+from typing import Optional
+
 import discord
 from discord.ext import commands
-from typing import Optional
-import re
-import sys
 
 try:
     with open("Data/token") as file:
@@ -72,7 +71,7 @@ def cog_unloader(name:Optional[str] = None) -> str:
     return continuous_string
 
 @bot.command(name="load", hidden=True, aliases=["l"])
-async def   load(ctx, name:Optional[str] = None):
+async def load(ctx, name:Optional[str] = None):
     if ctx.author.id in config["administrators"]:
         return await ctx.reply(cog_loader(name))
 
