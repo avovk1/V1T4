@@ -17,7 +17,8 @@ if token == "":
         with open("Data/token", "wt") as file:
             file.write(token)
     else:
-        raise "File with token is empty, please enter valid token! (path: Data/token)"
+        print("No file and no terminal detected - create ./Data/token file with actual bot token!")
+        exit(1)
 
 
 
@@ -71,18 +72,18 @@ def cog_unloader(name:Optional[str] = None) -> str:
     return continuous_string
 
 @bot.command(name="load", hidden=True, aliases=["l"])
-async def load(ctx, name:Optional[str] = None):
-    if ctx.author.id in config["administrators"]:
+async def load(ctx:commands.Context, name:Optional[str] = None) -> None:
+    if ctx.author.id in config["administrators"]: # type: ignore
         return await ctx.reply(cog_loader(name))
 
 @bot.command(name="unload", hidden=True, aliases=["u"])
-async def unload(ctx, name:Optional[str] = None):
-    if ctx.author.id in config["administrators"]:
+async def unload(ctx:commands.Context, name:Optional[str] = None) -> None:
+    if ctx.author.id in config["administrators"]: # type: ignore
         return await ctx.reply(cog_unloader(name))
 
 @bot.command(name="reload", hidden=True, aliases=["r"])
-async def reload(ctx, name:Optional[str] = None):
-    if ctx.author.id in config["administrators"]:
+async def reload(ctx:commands.Context, name:Optional[str] = None) -> None:
+    if ctx.author.id in config["administrators"]: # type: ignore
         return await ctx.reply(cog_loader(name) + "\n" + cog_unloader(name))
     
 bot.run(token)
