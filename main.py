@@ -1,89 +1,122 @@
 import sys
 import json
-from typing import Optional
 
 import discord
 from discord.ext import commands
 
 try:
-    with open("Data/token") as file:
-        token = file.read()
+    with open("Data/token", "rt", encoding="UTF-8") as file:
+        token = file.read() or ""
+    if token == "":
+        print("Token file is empty - provide actual token in ./Data/token file!")
+        sys.exit(1)
 except FileNotFoundError:
-    token = ""
-
-if token == "":
     if sys.stdin.isatty():
-        token = input("File with token is empty, please enter valid token! (path: Data/token)\n > ")
-        with open("Data/token", "wt") as file:
+        token = input("File with token is empty, please enter valid token! > ")
+        with open("Data/token", "wt", encoding="UTF-8") as file:
             file.write(token)
     else:
-        print("No file and no terminal detected - create ./Data/token file with actual bot token!")
-        exit(1)
+        token = ""
+        print("Token file is empty - provide actual token in ./Data/token file!")
+        sys.exit(1)
 
 
 
 
-with open("Data/config.json", "rt") as file:
+with open("Data/config.json", "rt", encoding="UTF-8") as file:
     config = json.load(file)
 
-with open("main_strings.json", "rt") as file:
+with open("main_strings.json", "rt", encoding="UTF-8") as file:
     strings = json.load(file)
 
-bot:commands.Bot = commands.Bot(command_prefix=config["prefix"], intents = discord.Intents.all())
+bot:commands.Bot = commands.Bot(command_prefix=config["prefix"],
+                                intents = discord.Intents.all())
 
-def cog_loader(name:Optional[str] = None) -> str:
+def cog_loader(name:str|None = None) -> str:
+    """If provided with name - loads specific module.
+    othervice loads all default
+    """
     if name:
         try:
             bot.load_extension("Modules."+name)
-            string = strings["load"]["success"].format(name = name)
-        except BaseException as error:
-            string = strings["load"]["failure"].format(name = name, error = error)
+            string:str = strings["load"]["success"]
+        except discord.ExtensionNotFound:
+            string:str = strings["load"]["notfound"]
+        except discord.NoEntryPointError:
+            string:str = strings["load"]["noentry"]
+        except discord.ExtensionAlreadyLoaded:
+            string:str = strings["load"]["loaded"]
+        except discord.ExtensionFailed as error:
+            string:str = strings["load"]["failure"] + error + "\n"
+        string:str = string.format(name = name)
         print(string)
         return string
-    continuous_string = ""
-    for i in config["modules"]:
-        try:
-            bot.load_extension("Modules."+i)
-            string = strings["load"]["success"].format(name = name)
-        except BaseException as error:
-            string = strings["load"]["failure"].format(name = name, error = error)
-        print(string)
-        continuous_string += string + "\n"
-    return continuous_string
+    else:
+        continuous_string:str = ""
+        for i in config["modules"]:
+            try:
+                bot.load_extension("Modules."+i)
+                string:str = strings["load"]["success"]
+            except discord.ExtensionNotFound:
+                string:str = strings["load"]["notfound"]
+            except discord.NoEntryPointError:
+                string:str = strings["load"]["noentry"]
+            except discord.ExtensionAlreadyLoaded:
+                string:str = strings["load"]["loaded"]
+            except discord.ExtensionFailed as error:
+                string:str = strings["load"]["failure"] + error + "\n"
+            string:str = string.format(name = name)
+            print(string)
+            continuous_string += string + "\n"
+        return continuous_string
 
-def cog_unloader(name:Optional[str] = None) -> str:
+def cog_unloader(name:str|None = None) -> str:
+    """If provided with name - unloads specific module.
+    othervice unloads all default
+    """
     if name:
         try:
             bot.unload_extension(name)
-            string = strings["unload"]["success"].format(name = name)
-        except BaseException as error:
-            string = strings["unload"]["failure"].format(name = name, error = error)
+            string:str = strings["unload"]["success"]
+        except discord.ExtensionNotFound:
+            string:str = strings["load"]["notfound"]
+        except discord.ExtensionNotLoaded:
+            string:str = strings["load"]["notloaded"]
+        string:str = string.format(name = name)
         print(string)
         return string
-    continuous_string = ""
-    for i in config["modules"]:
-        try:
-            bot.unload_extension(i)
-            string = strings["unload"]["success"].format(name = name)
-        except BaseException as error:
-            string = strings["unload"]["failure"].format(name = name, error = error)
-        print(string)
-        continuous_string += string + "\n"
-    return continuous_string
+    else:
+        continuous_string = ""
+        for i in config["modules"]:
+            try:
+                bot.unload_extension(i)
+                string:str = strings["unload"]["success"]
+            except discord.ExtensionNotFound:
+                string:str = strings["load"]["notfound"]
+            except discord.ExtensionNotLoaded:
+                string:str = strings["load"]["notloaded"]
+            string:str = string.format(name = name)
+            print(string)
+            continuous_string += string + "\n"
+        return continuous_string
 
 @bot.command(name="load", hidden=True, aliases=["l"])
-async def load(ctx:commands.Context, name:Optional[str] = None) -> None:
+async def load(ctx:commands.Context, name:str|None = None) -> discord.Message|None:
+    """Discord interface function"""
     if ctx.author.id in config["administrators"]: # type: ignore
         return await ctx.reply(cog_loader(name))
 
 @bot.command(name="unload", hidden=True, aliases=["u"])
-async def unload(ctx:commands.Context, name:Optional[str] = None) -> None:
+async def unload(ctx:commands.Context, name:str|None = None) -> discord.Message|None:
+    """Discord interface function"""
     if ctx.author.id in config["administrators"]: # type: ignore
         return await ctx.reply(cog_unloader(name))
 
 @bot.command(name="reload", hidden=True, aliases=["r"])
-async def reload(ctx:commands.Context, name:Optional[str] = None) -> None:
-    if ctx.author.id in config["administrators"]: # type: ignore
-        return await ctx.reply(cog_loader(name) + "\n" + cog_unloader(name))
-    
+async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|None:
+    """Discord interface function"""
+    author:discord.Member = ctx.author
+    if author.id in config["administrators"]: # type: ignore
+        return await ctx.reply(cog_unloader(name) + "\n" + cog_loader(name))
+
 bot.run(token)

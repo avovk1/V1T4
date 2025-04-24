@@ -1,0 +1,28 @@
+{
+    "interactions": {
+        "hug": {
+            "aliaces": ["hug", "обійняти"],
+            "links": ["www", "www"]
+        },
+        "": {
+            "aliaces": ["", ""],
+            "links": ["", ""]
+        }
+    },
+    "server_specific": {
+        "serverID": {
+            "interactions": {
+                "hug": {
+                    "o_aliaces": [""],
+                    "c_aliaces": ["hug", "обійняти"],
+                    "links": ["www", "www"]
+                },
+                "": {
+                    "o_aliaces": [""],
+                    "c_aliaces": ["", ""],
+                    "links": ["", ""]
+                }
+            }
+        }
+    }
+}

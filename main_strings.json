@@ -1,10 +1,15 @@
 {
     "load": {
         "success": "{name} loaded!",
-        "failure": "{name} cannot be loaded - error text:\n\t{error}"
+        "notfound": "{name} extension not found - check spelling",
+        "noentry": "{name} doesn't have entry point - ping developer",
+        "loaded": "{name} is already loaded!",
+        "failure": "{name} failed to load - error text:\n\t"
     },
     "unload": {
         "success": "{name} unloaded!",
-        "failure": "{name} cannot be unloaded - error text:\n\t{error}"
+        "notfound": "{name} extension not found - check spelling",
+        "loaded": "{name} is not loaded!",
+        "failure": "{name} cannot be unloaded - error text:\n\t"
     }
 }
