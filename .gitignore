@@ -3,5 +3,7 @@ __pycache__
 typings
 
 .vscode
+.venv
 
 token
+*secret.yaml

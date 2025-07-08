@@ -9,3 +9,12 @@ If you have any suggestions how I can make my code a little bit more understanda
 - embed for interactions
 - custom interactions
 - banning by keyword/keysticker (bruh)
+- git update via command
+- actual help command and docs
+
+# TODO AI testing list:
+- Interface with AI serving endpoint
+- Interface with Discord
+- Support for unlimited paralel chats
+- Rapildy changeable models
+- Rapildy changeable system prompts
