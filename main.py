@@ -1,8 +1,12 @@
 import sys
 import json
+# import time
+# from multiprocessing import Process
+
 
 import discord
 from discord.ext import commands
+# import git
 
 try:
     with open("Data/token", "rt", encoding="UTF-8") as file:
@@ -118,5 +122,29 @@ async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|
     author:discord.Member = ctx.author
     if author.id in config["administrators"]: # type: ignore
         return await ctx.reply(cog_unloader(name) + "\n" + cog_loader(name))
+
+# @bot.command(name="update", hidden=True)
+# async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
+#     """Function to check for update, apply update, or update if there is new version. Usage:\n
+#     "check" or no argument - checks repo, and reports if there is update\n
+#     "update" - updates, if there is new version, dont use it willy-nilly\n
+#     "update-soft" - updates only modules, without bot downtime\n
+#     "schedule" - plans update to some point in time, where update will cause least amount of problems\n
+#     "schedule-soft" - plans update of only modules\n
+#     """
+#     repo:git.Repo = git.Repo("./.git")
+#     match action:
+#         case "check"|None:
+#             pass
+#         case "update":
+#             pass
+#         case "update-soft":
+#             pass
+#         case "schedule":
+#             pass
+#         case "schedule-soft":
+#             pass
+#         case _:
+#             pass
 
 bot.run(token)
