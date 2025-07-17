@@ -8,6 +8,8 @@ import discord
 from discord.ext import commands
 # import git
 
+DEBUG = True
+
 try:
     with open("Data/token", "rt", encoding="UTF-8") as file:
         token = file.read() or ""
@@ -41,37 +43,44 @@ def cog_loader(name:str|None = None) -> str:
     othervice loads all default
     """
     if name:
-        try:
+        string:str = ""
+        if DEBUG:
             bot.load_extension("Modules."+name)
-            string:str = strings["load"]["success"]
-        except discord.ExtensionNotFound:
-            string:str = strings["load"]["notfound"]
-        except discord.NoEntryPointError:
-            string:str = strings["load"]["noentry"]
-        except discord.ExtensionAlreadyLoaded:
-            string:str = strings["load"]["loaded"]
-        except discord.ExtensionFailed as error:
-            string:str = strings["load"]["failure"] + str(error) + "\n"
-        string:str = string.format(name = name)
-        print(string)
+        else:
+            try:
+                bot.load_extension("Modules."+name)
+                string = strings["load"]["success"]
+            except discord.ExtensionNotFound:
+                string = strings["load"]["notfound"]
+            except discord.NoEntryPointError:
+                string = strings["load"]["noentry"]
+            except discord.ExtensionAlreadyLoaded:
+                string = strings["load"]["loaded"]
+            except discord.ExtensionFailed as error:
+                string = strings["load"]["failure"] + str(error) + "\n"
+            string = string.format(name = name)
+            print(string)
         return string
     else:
         continuous_string:str = ""
         for i in config["modules"]:
-            try:
+            if DEBUG:
                 bot.load_extension("Modules."+i)
-                string:str = strings["load"]["success"]
-            except discord.ExtensionNotFound:
-                string:str = strings["load"]["notfound"]
-            except discord.NoEntryPointError:
-                string:str = strings["load"]["noentry"]
-            except discord.ExtensionAlreadyLoaded:
-                string:str = strings["load"]["loaded"]
-            except discord.ExtensionFailed as error:
-                string:str = strings["load"]["failure"] + str(error) + "\n"
-            string:str = string.format(name = name)
-            print(string)
-            continuous_string += string + "\n"
+            else:
+                try:
+                    bot.load_extension("Modules."+i)
+                    string:str = strings["load"]["success"]
+                except discord.ExtensionNotFound:
+                    string:str = strings["load"]["notfound"]
+                except discord.NoEntryPointError:
+                    string:str = strings["load"]["noentry"]
+                except discord.ExtensionAlreadyLoaded:
+                    string:str = strings["load"]["loaded"]
+                except discord.ExtensionFailed as error:
+                    string:str = strings["load"]["failure"] + str(error) + "\n"
+                string:str = string.format(name = name)
+                print(string)
+                continuous_string += string + "\n"
         return continuous_string
 
 def cog_unloader(name:str|None = None) -> str:
