@@ -8,7 +8,7 @@ import discord
 from discord.ext import commands
 # import git
 
-DEBUG = True
+DEBUG = False
 
 try:
     with open("Data/token", "rt", encoding="UTF-8") as file:
