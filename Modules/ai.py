@@ -50,9 +50,9 @@ class Chat():
                          "content":self.system_prompt}]
         return
 
-    def set_system_prompt(self, prompt:str|None=None) -> None:
+    def set_system_prompt(self, prompt:str) -> None:
         """Sets system propt to user defined, or default if none provided."""
-        self.system_prompt = self.default_prompt if prompt is None else prompt
+        self.system_prompt = self.default_prompt if prompt == "" else prompt
         return
 
 class Ai(commands.Cog):
@@ -94,14 +94,14 @@ class Ai(commands.Cog):
         self.chats[ctx.author.id].reset()
         return await ctx.reply("Chat history had been reset, nya!")
 
-    @commands.command(name = "edit_system_message")
-    async def edit_system_message(self, ctx:commands.Context, ) -> discord.Message|None:
+    @commands.command(name = "edit_system_prompt")
+    async def edit_system_prompt(self, ctx:commands.Context, system_prompt:str) -> discord.Message|None:
         """Resets history with bot"""
         if not isinstance(ctx.channel, discord.DMChannel):
             return
         if ctx.author.id not in self.chats:
             self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
-        self.chats[ctx.author.id].set_system_prompt()
+        self.chats[ctx.author.id].set_system_prompt(system_prompt)
         return await ctx.reply("System prompt had been changed, nya!")
 
     @commands.Cog.listener("on_message")
@@ -114,11 +114,12 @@ class Ai(commands.Cog):
             return
         if message.author.id not in self.chats:
             self.chats[message.author.id] = Chat(message.author.id, self.default_prompt)
-        reply:str = self.chats[message.author.id].generate(
-            self.address + self.inference_endpoint,
-            self.model,
-            message.content
-        )
+        async with message.channel.typing():
+            reply:str = self.chats[message.author.id].generate(
+                self.address + self.inference_endpoint,
+                self.model,
+                message.content
+            )
         return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
