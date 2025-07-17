@@ -68,7 +68,7 @@ def cog_loader(name:str|None = None) -> str:
             except discord.ExtensionAlreadyLoaded:
                 string:str = strings["load"]["loaded"]
             except discord.ExtensionFailed as error:
-                string:str = strings["load"]["failure"] + error + "\n"
+                string:str = strings["load"]["failure"] + str(error) + "\n"
             string:str = string.format(name = name)
             print(string)
             continuous_string += string + "\n"
