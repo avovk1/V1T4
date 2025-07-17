@@ -43,14 +43,14 @@ class Chat():
                                        "generated":response})+"\n")
 
         return response
-    
+
     def reset(self) -> None:
         """Resets chat history."""
         self.dialogs:list[dict[str,str|int]] = [{"time":int(time()),
                                                  "role":"system",
                                                  "content":self.system_prompt}]
         return
-    
+
     def set_system_prompt(self, prompt:str|None=None) -> None:
         """Sets system propt to user defined, or default if none provided."""
         self.system_prompt = self.default_prompt if prompt is None else prompt
@@ -78,28 +78,48 @@ class Ai(commands.Cog):
         self.chats:dict[int, Chat] = {}
         self.model = r.json()["data"]["id"]
         self.bot:commands.Bot = bot
+        if self.bot.user is not None:
+            self.bot_id = self.bot.user.id
 
     def cog_unload(self) -> None:
         print("goodbye world!")
 
     @commands.command(name = "History_reset")
     async def history_reset(self, ctx:commands.Context) -> discord.Message|None:
-        if type(ctx.channel) != discord.DMChannel:
+        """Wrapper to reset chat history"""
+        if not isinstance(ctx.channel, discord.DMChannel):
             return
         if ctx.author.id not in self.chats:
             self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
-        return
-    
+        self.chats[ctx.author.id].reset()
+        return await ctx.reply("Chat history had been reset, nya!")
+
     @commands.command(name = "edit_system_message")
-    async def edit_system_message(self, ctx:commands.Context) -> discord.Message|None:
+    async def edit_system_message(self, ctx:commands.Context, ) -> discord.Message|None:
         """Resets history with bot"""
-        return
+        if not isinstance(ctx.channel, discord.DMChannel):
+            return
+        if ctx.author.id not in self.chats:
+            self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
+        self.chats[ctx.author.id].set_system_prompt()
+        return await ctx.reply("System prompt had been changed, nya!")
 
     @commands.Cog.listener("on_message")
-    async def answer(self, ctx:commands.Context) -> discord.Message|None:
+    async def answer(self, message:discord.Message) -> discord.Message|None:
         """Gets user message and then generates an answer
         also logs userID, name, request, and generated answer - just in case"""
-        return
+        if message.author.id == self.bot_id:
+            return
+        if not isinstance(message.channel, discord.DMChannel):
+            return
+        if message.author.id not in self.chats:
+            self.chats[message.author.id] = Chat(message.author.id, self.default_prompt)
+        reply = self.chats[message.author.id].generate(
+            self.address + self.inference_endpoint,
+            self.model,
+            message.content
+        )
+        return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""
