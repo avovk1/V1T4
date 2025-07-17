@@ -52,7 +52,7 @@ class Chat():
 
     def set_system_prompt(self, prompt:str) -> None:
         """Sets system propt to user defined, or default if none provided."""
-        self.system_prompt = self.default_prompt if prompt == "" else prompt
+        self.system_prompt = self.default_prompt if prompt == "default" else prompt
         return
 
 class Ai(commands.Cog):
@@ -125,7 +125,3 @@ class Ai(commands.Cog):
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""
     bot.add_cog(Ai(bot))
-
-
-# if __name__ == "__main__":
-#     setup()

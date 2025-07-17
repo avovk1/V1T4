@@ -156,4 +156,5 @@ async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|
 #         case _:
 #             pass
 
+print("Almost loaded!")
 bot.run(token)
