@@ -35,7 +35,7 @@ class Chat():
                              "content":response})
 
         if DEBUG:
-            with open("AI_DEBUG_LOG.log", "wt+", encoding="UTF-8") as file:
+            with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
                 file.write(json.dumps({"time":int(time()),
                                        "user_id":self.user_id,
                                        "user_prompt":user_prompt,
@@ -108,9 +108,9 @@ class Ai(commands.Cog):
     async def answer(self, message:discord.Message) -> discord.Message|None:
         """Gets user message and then generates an answer
         also logs userID, name, request, and generated answer - just in case"""
-        if message.author.id == self.bot_id:
-            return
-        if not isinstance(message.channel, discord.DMChannel):
+        if not isinstance(message.channel, discord.DMChannel)\
+        or message.author.id == self.bot_id\
+        or message.content.startswith("Meow, "):
             return
         if message.author.id not in self.chats:
             self.chats[message.author.id] = Chat(message.author.id, self.default_prompt)
