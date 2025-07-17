@@ -74,7 +74,7 @@ class Ai(commands.Cog):
             method = "GET",
             url = self.address + self.model_endpoint
         )
-        self.model:str = r.json()["data"]["id"]
+        self.model:str = r.json()["data"][0]["id"]
         del r
         self.chats:dict[int, Chat] = {}
         self.bot:commands.Bot = bot
