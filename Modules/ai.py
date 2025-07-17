@@ -40,7 +40,7 @@ class Chat():
                                        "user_id":self.user_id,
                                        "user_prompt":user_prompt,
                                        "system_prompt":self.system_prompt,
-                                       "generated":response})+"\n")
+                                       "generated":response}, ensure_ascii=False)+"\n")
 
         return response
 
