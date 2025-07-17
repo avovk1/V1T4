@@ -2,7 +2,7 @@
 
 import json
 from time import time
-from urllib3 import request
+from urllib3 import BaseHTTPResponse, request
 import discord
 from discord.ext import commands
 
@@ -30,7 +30,7 @@ class Chat():
             timeout = None
             )
 
-        response = r.json()["choices"][0]["message"]["content"]
+        response:str = r.json()["choices"][0]["message"]["content"]
         self.dialogs.append({"role":"assistant",
                              "content":response})
 
@@ -46,9 +46,8 @@ class Chat():
 
     def reset(self) -> None:
         """Resets chat history."""
-        self.dialogs:list[dict[str,str|int]] = [{"time":int(time()),
-                                                 "role":"system",
-                                                 "content":self.system_prompt}]
+        self.dialogs = [{"role":"system",
+                         "content":self.system_prompt}]
         return
 
     def set_system_prompt(self, prompt:str|None=None) -> None:
@@ -66,20 +65,21 @@ class Ai(commands.Cog):
         # Kinda ironic from me, whom always said that "JSON is my DB"
         with open("Data/ai.json", "rt", encoding = "UTF-8") as file:
             data:dict = json.load(file)
-            self.address = data["address"]
-            self.model_endpoint = data["model_endpoint"]
-            self.inference_endpoint = data["inference_endpoint"]
-            self.default_prompt = data["default_prompt"]
+            self.address:str = data["address"]
+            self.model_endpoint:str = data["model_endpoint"]
+            self.inference_endpoint:str = data["inference_endpoint"]
+            self.default_prompt:str = data["default_prompt"]
         del data
-        r = request(
+        r:BaseHTTPResponse = request(
             method = "GET",
             url = self.address + self.model_endpoint
         )
+        self.model:str = r.json()["data"]["id"]
+        del r
         self.chats:dict[int, Chat] = {}
-        self.model = r.json()["data"]["id"]
         self.bot:commands.Bot = bot
         if self.bot.user is not None:
-            self.bot_id = self.bot.user.id
+            self.bot_id:int = self.bot.user.id
 
     def cog_unload(self) -> None:
         print("goodbye world!")
@@ -114,7 +114,7 @@ class Ai(commands.Cog):
             return
         if message.author.id not in self.chats:
             self.chats[message.author.id] = Chat(message.author.id, self.default_prompt)
-        reply = self.chats[message.author.id].generate(
+        reply:str = self.chats[message.author.id].generate(
             self.address + self.inference_endpoint,
             self.model,
             message.content
@@ -124,3 +124,7 @@ class Ai(commands.Cog):
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""
     bot.add_cog(Ai(bot))
+
+
+# if __name__ == "__main__":
+#     setup()

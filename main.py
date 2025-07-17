@@ -20,7 +20,7 @@ except FileNotFoundError:
         with open("Data/token", "wt", encoding="UTF-8") as file:
             file.write(token)
     else:
-        token = ""
+        token = "" # pylint: disable=C0103
         print("Token file is empty - provide actual token in ./Data/token file!")
         sys.exit(1)
 
@@ -107,20 +107,20 @@ def cog_unloader(name:str|None = None) -> str:
 @bot.command(name="load", hidden=True, aliases=["l"])
 async def load(ctx:commands.Context, name:str|None = None) -> discord.Message|None:
     """Discord interface function"""
-    if ctx.author.id in config["administrators"]: # type: ignore
+    if ctx.author.id in config["administrators"]:
         return await ctx.reply(cog_loader(name))
 
 @bot.command(name="unload", hidden=True, aliases=["u"])
 async def unload(ctx:commands.Context, name:str|None = None) -> discord.Message|None:
     """Discord interface function"""
-    if ctx.author.id in config["administrators"]: # type: ignore
+    if ctx.author.id in config["administrators"]:
         return await ctx.reply(cog_unloader(name))
 
 @bot.command(name="reload", hidden=True, aliases=["r"])
 async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|None:
     """Discord interface function"""
     author:discord.Member = ctx.author
-    if author.id in config["administrators"]: # type: ignore
+    if author.id in config["administrators"]:
         return await ctx.reply(cog_unloader(name) + "\n" + cog_loader(name))
 
 # @bot.command(name="update", hidden=True)
