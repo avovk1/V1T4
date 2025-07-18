@@ -2,6 +2,7 @@
 
 import json
 from time import time
+from math import ceil
 from urllib3 import BaseHTTPResponse, request
 import discord
 from discord.ext import commands
@@ -120,6 +121,15 @@ class Ai(commands.Cog):
                 self.model,
                 message.content
             )
+	# TODO: finish this piece of code
+	# if len(range) >= 2000:
+        #     temp_str:str
+        #     index:int
+        #     for _ in range(int(len(reply)/1000)):
+        #         temp_str = reply[:1999]
+        #         index = temp.rfind("\n")
+        #         out_str = reply[:index]
+        # else:
         return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
