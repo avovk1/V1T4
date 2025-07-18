@@ -97,7 +97,7 @@ class Ai(commands.Cog):
     @commands.command(name = "edit_system_prompt")
     async def edit_system_prompt(self,
                                  ctx:commands.Context,
-                                 system_prompt:str) -> discord.Message|None:
+                                 *, system_prompt:str) -> discord.Message|None:
         """Resets history with bot"""
         if not isinstance(ctx.channel, discord.DMChannel):
             return
