@@ -2,7 +2,6 @@
 
 import json
 from time import time
-from math import ceil
 from urllib3 import BaseHTTPResponse, request
 import discord
 from discord.ext import commands
@@ -96,7 +95,9 @@ class Ai(commands.Cog):
         return await ctx.reply("Chat history had been reset, nya!")
 
     @commands.command(name = "edit_system_prompt")
-    async def edit_system_prompt(self, ctx:commands.Context, system_prompt:str) -> discord.Message|None:
+    async def edit_system_prompt(self,
+                                 ctx:commands.Context,
+                                 system_prompt:str) -> discord.Message|None:
         """Resets history with bot"""
         if not isinstance(ctx.channel, discord.DMChannel):
             return
@@ -121,16 +122,29 @@ class Ai(commands.Cog):
                 self.model,
                 message.content
             )
-	# TODO: finish this piece of code
-	# if len(range) >= 2000:
-        #     temp_str:str
-        #     index:int
-        #     for _ in range(int(len(reply)/1000)):
-        #         temp_str = reply[:1999]
-        #         index = temp.rfind("\n")
-        #         out_str = reply[:index]
-        # else:
-        return await message.channel.send(reply)
+        # Checking if output is longer than discord message limit
+        # And if it is - breaking it up into chunks
+        if len(reply) > 2000:
+            temp_str:str
+            index:int
+            out_str:str
+            # Just for sake of right move - limiting amount of iterations
+            for _ in range(int(len(reply)/1000)):
+                if len(reply) > 2000:
+                    temp_str = reply[:2000]
+                    index = temp_str.rfind("\n")
+                    # If there is no newlines!
+                    if index < 0:
+                        index = temp_str.rfind(" ")
+                    #If there is not even spaces!
+                    if index < 0:
+                        index = 2000
+                    # Breaking strings between eachother, hope this is okay to do it this way
+                    out_str = reply[:index]
+                    reply = reply[index:]
+                await message.channel.send(out_str)
+        else:
+            return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""
