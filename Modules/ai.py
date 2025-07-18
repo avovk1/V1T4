@@ -142,10 +142,10 @@ class Ai(commands.Cog):
                         # Breaking strings between eachother, hope this is okay to do it this way
                         out_str = reply[:index]
                         reply = reply[index:]
-                    await message.channel.send(out_str)
-            else:
-                await message.channel.send(reply)
-        return
+                        await message.channel.send(out_str)
+                    else:
+                        break
+        return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""
