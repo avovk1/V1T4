@@ -122,29 +122,30 @@ class Ai(commands.Cog):
                 self.model,
                 message.content
             )
-        # Checking if output is longer than discord message limit
-        # And if it is - breaking it up into chunks
-        if len(reply) > 2000:
-            temp_str:str
-            index:int
-            out_str:str
-            # Just for sake of right move - limiting amount of iterations
-            for _ in range(int(len(reply)/1000)):
-                if len(reply) > 2000:
-                    temp_str = reply[:2000]
-                    index = temp_str.rfind("\n")
-                    # If there is no newlines!
-                    if index < 0:
-                        index = temp_str.rfind(" ")
-                    #If there is not even spaces!
-                    if index < 0:
-                        index = 2000
-                    # Breaking strings between eachother, hope this is okay to do it this way
-                    out_str = reply[:index]
-                    reply = reply[index:]
-                await message.channel.send(out_str)
-        else:
-            return await message.channel.send(reply)
+            # Checking if output is longer than discord message limit
+            # And if it is - breaking it up into chunks
+            if len(reply) > 2000:
+                temp_str:str
+                index:int
+                out_str:str
+                # Just for sake of right move - limiting amount of iterations
+                for _ in range(int(len(reply)/1000)):
+                    if len(reply) > 2000:
+                        temp_str = reply[:2000]
+                        index = temp_str.rfind("\n")
+                        # If there is no newlines!
+                        if index < 0:
+                            index = temp_str.rfind(" ")
+                        #If there is not even spaces!
+                        if index < 0:
+                            index = 2000
+                        # Breaking strings between eachother, hope this is okay to do it this way
+                        out_str = reply[:index]
+                        reply = reply[index:]
+                    await message.channel.send(out_str)
+            else:
+                await message.channel.send(reply)
+        return
 
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""
