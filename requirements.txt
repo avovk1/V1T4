@@ -1,3 +1,4 @@
 py-cord[voice]
 urllib3
 audioop-lts
+GitPython

@@ -1,12 +1,12 @@
+"""Core of V1T4 bot"""
+
 import sys
 import json
-# import time
-# from multiprocessing import Process
-
+from subprocess import Popen
 
 import discord
 from discord.ext import commands
-# import git
+from updater import check
 
 DEBUG = False
 
@@ -132,29 +132,22 @@ async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|
     if author.id in config["administrators"]:
         return await ctx.reply(cog_unloader(name) + "\n" + cog_loader(name))
 
-# @bot.command(name="update", hidden=True)
-# async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
-#     """Function to check for update, apply update, or update if there is new version. Usage:\n
-#     "check" or no argument - checks repo, and reports if there is update\n
-#     "update" - updates, if there is new version, dont use it willy-nilly\n
-#     "update-soft" - updates only modules, without bot downtime\n
-#     "schedule" - plans update to some point in time, where update will cause least amount of problems\n
-#     "schedule-soft" - plans update of only modules\n
-#     """
-#     repo:git.Repo = git.Repo("./.git")
-#     match action:
-#         case "check"|None:
-#             pass
-#         case "update":
-#             pass
-#         case "update-soft":
-#             pass
-#         case "schedule":
-#             pass
-#         case "schedule-soft":
-#             pass
-#         case _:
-#             pass
+@bot.command(name="update", hidden=True)
+async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
+    """Function to check for update, apply update, or update if there is new version. Usage:\n
+    No argument - Force updates, only for MEEE\n
+    "check" - checks repo, and reports if there is update\n
+    """
+    if action.lower() == "check":
+        if check():
+            return await ctx.reply("I am up to date!")
+        else:
+            return await ctx.reply("Okay, I need to be updated - contact owner pwease!")
+    else:
+        if ctx.author.id != bot.owner_id:
+            return await ctx.reply("This function is to be used only by owner!")
+        Popen(["python", "updater.py"])
+        bot.close()
 
-print("Almost loaded!")
+cog_loader()
 bot.run(token)

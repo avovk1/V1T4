@@ -87,10 +87,13 @@ class Ai(commands.Cog):
     @commands.command(name = "History_reset")
     async def history_reset(self, ctx:commands.Context) -> discord.Message|None:
         """Wrapper to reset chat history"""
+        # validating input
         if not isinstance(ctx.channel, discord.DMChannel):
             return
+        # just in case not initialized
         if ctx.author.id not in self.chats:
             self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
+        # work itself
         self.chats[ctx.author.id].reset()
         return await ctx.reply("Chat history had been reset, nya!")
 
@@ -99,10 +102,13 @@ class Ai(commands.Cog):
                                  ctx:commands.Context,
                                  *, system_prompt:str) -> discord.Message|None:
         """Resets history with bot"""
+        # validating input
         if not isinstance(ctx.channel, discord.DMChannel):
             return
+        # just in case not initialized
         if ctx.author.id not in self.chats:
             self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
+        # work itself
         self.chats[ctx.author.id].set_system_prompt(system_prompt)
         return await ctx.reply("System prompt had been changed, nya!")
 
@@ -129,7 +135,7 @@ class Ai(commands.Cog):
                 index:int
                 out_str:str
                 # Just for sake of right move - limiting amount of iterations
-                for _ in range(int(len(reply)/1000)):
+                for _ in range(len(reply)):
                     if len(reply) > 2000:
                         temp_str = reply[:2000]
                         index = temp_str.rfind("\n")
@@ -139,7 +145,7 @@ class Ai(commands.Cog):
                         #If there is not even spaces!
                         if index < 0:
                             index = 2000
-                        # Breaking strings between eachother, hope this is okay to do it this way
+                        # Breaking strings on found edge, hope this is okay to do it this way
                         out_str = reply[:index]
                         reply = reply[index:]
                         await message.channel.send(out_str)
