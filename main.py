@@ -144,7 +144,7 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
         else:
             return await ctx.reply("Okay, I need to be updated - contact owner pwease!")
     else:
-        if ctx.author.id != bot.owner_id:
+        if ctx.author.id != 579704749277052938:
             return await ctx.reply("This function is to be used only by owner!")
         Popen(["python", "updater.py"])
         bot.close()
