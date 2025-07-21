@@ -11,8 +11,8 @@ def check() -> bool:
     """If the local repo is up to date"""
     return remote.fetch()[0].flags//4 == 1
 
-sleep(10)
-repo.remotes[0].pull()
-
-Popen(["python", "main.py"])
-print("Update done!")
+if __name__ == "__main__":
+    sleep(10)
+    repo.remotes[0].pull()
+    Popen(["python", "main.py"])
+    print("Update done!")
