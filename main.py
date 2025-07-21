@@ -149,5 +149,7 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
         Popen(["python", "updater.py"])
         bot.close()
 
-cog_loader()
+async def on_ready():
+    cog_loader()
+
 bot.run(token)
