@@ -138,7 +138,7 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
     No argument - Force updates, only for MEEE\n
     "check" - checks repo, and reports if there is update\n
     """
-    if action.lower() == "check":
+    if action == "check":
         if check():
             return await ctx.reply("I am up to date!")
         else:
