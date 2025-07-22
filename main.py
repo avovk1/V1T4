@@ -148,7 +148,7 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
             return await ctx.reply("This function is to be used only by owner!")
         Popen(["python", "updater.py"])
         print("Bot is disconnecting!")
-        bot.close()
+        await bot.close()
         print("Bot is disconnected!")
 
 @bot.event
