@@ -147,10 +147,13 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
         if ctx.author.id != 579704749277052938:
             return await ctx.reply("This function is to be used only by owner!")
         Popen(["python", "updater.py"])
+        print("Bot is disconnecting!")
         bot.close()
+        print("Bot is disconnected!")
 
 @bot.event
 async def on_ready():
     cog_loader()
+    print("Bot is connected!")
 
 bot.run(token)
