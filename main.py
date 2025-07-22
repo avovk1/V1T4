@@ -58,29 +58,24 @@ def cog_loader(name:str|None = None) -> str:
                 string = strings["load"]["loaded"]
             except discord.ExtensionFailed as error:
                 string = strings["load"]["failure"] + str(error) + "\n"
-            string = string.format(name = name)
-            print(string)
+            print(string.format(name = name))
         return string
     else:
         continuous_string:str = ""
         for i in config["modules"]:
-            if DEBUG:
+            try:
                 bot.load_extension("Modules."+i)
-            else:
-                try:
-                    bot.load_extension("Modules."+i)
-                    string:str = strings["load"]["success"]
-                except discord.ExtensionNotFound:
-                    string:str = strings["load"]["notfound"]
-                except discord.NoEntryPointError:
-                    string:str = strings["load"]["noentry"]
-                except discord.ExtensionAlreadyLoaded:
-                    string:str = strings["load"]["loaded"]
-                except discord.ExtensionFailed as error:
-                    string:str = strings["load"]["failure"] + str(error) + "\n"
-                string:str = string.format(name = name)
-                print(string)
-                continuous_string += string + "\n"
+                string:str = strings["load"]["success"]
+            except discord.ExtensionNotFound:
+                string:str = strings["load"]["notfound"]
+            except discord.NoEntryPointError:
+                string:str = strings["load"]["noentry"]
+            except discord.ExtensionAlreadyLoaded:
+                string:str = strings["load"]["loaded"]
+            except discord.ExtensionFailed as error:
+                string:str = strings["load"]["failure"] + str(error) + "\n"
+            print(string.format(name = i))
+            continuous_string += string + "\n"
         return continuous_string
 
 def cog_unloader(name:str|None = None) -> str:
@@ -95,11 +90,10 @@ def cog_unloader(name:str|None = None) -> str:
             string:str = strings["load"]["notfound"]
         except discord.ExtensionNotLoaded:
             string:str = strings["load"]["notloaded"]
-        string:str = string.format(name = name)
-        print(string)
+        print(string.format(name = name))
         return string
     else:
-        continuous_string = ""
+        continuous_string:str = ""
         for i in config["modules"]:
             try:
                 bot.unload_extension(i)
@@ -108,8 +102,7 @@ def cog_unloader(name:str|None = None) -> str:
                 string:str = strings["load"]["notfound"]
             except discord.ExtensionNotLoaded:
                 string:str = strings["load"]["notloaded"]
-            string:str = string.format(name = name)
-            print(string)
+            print(string.format(name = i))
             continuous_string += string + "\n"
         return continuous_string
 
@@ -153,6 +146,7 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
 
 @bot.event
 async def on_ready():
+    """Loading modules on start"""
     cog_loader()
     print("Bot is connected!")
 
