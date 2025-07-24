@@ -84,7 +84,7 @@ class Ai(commands.Cog):
     def cog_unload(self) -> None:
         print("goodbye world!")
 
-    @commands.command(name = "History_reset")
+    @commands.command(name = "clear")
     async def history_reset(self, ctx:commands.Context) -> discord.Message|None:
         """Wrapper to reset chat history"""
         # validating input
@@ -97,7 +97,7 @@ class Ai(commands.Cog):
         self.chats[ctx.author.id].reset()
         return await ctx.reply("Chat history had been reset, nya!")
 
-    @commands.command(name = "edit_system_prompt")
+    @commands.command(name = "set_prompt")
     async def edit_system_prompt(self,
                                  ctx:commands.Context,
                                  *, system_prompt:str) -> discord.Message|None:
@@ -110,7 +110,8 @@ class Ai(commands.Cog):
             self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
         # work itself
         self.chats[ctx.author.id].set_system_prompt(system_prompt)
-        return await ctx.reply("System prompt had been changed, nya!")
+        await ctx.reply("System prompt had been changed, nya!")
+        return self.history_reset(ctx)
 
     @commands.Cog.listener("on_message")
     async def answer(self, message:discord.Message) -> discord.Message|None:
