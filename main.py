@@ -125,11 +125,11 @@ async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|
     if author.id in config["administrators"]:
         return await ctx.reply(cog_unloader(name) + "\n" + cog_loader(name))
 
-@bot.command(name="update", hidden=True)
+@bot.command(name="update")
 async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
     """Function to check for update, apply update, or update if there is new version. Usage:\n
     No argument - Force updates, only for MEEE\n
-    "check" - checks repo, and reports if there is update\n
+    "check" - checks repo, and reports if there is update
     """
     if action == "check":
         if check():
@@ -137,8 +137,9 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
         else:
             return await ctx.reply("Okay, I need to be updated - contact owner pwease!")
     else:
-        if ctx.author.id != 579704749277052938:
-            return await ctx.reply("This function is to be used only by owner!")
+        if ctx.author.id in config["administrators"]:
+            return await ctx.reply("This function is to be used only by owner!"+
+                    "In order to check whether I need update - use \"Meow, update check\"")
         Popen(["python", "updater.py"])
         print("Bot is disconnecting!")
         await bot.close()

@@ -35,8 +35,8 @@ class Chat():
                              "content":response})
 
         if DEBUG:
-            entry:str = """{"time": {time}, "user_id": {user_id}, "is_clear": {is_clear}
-"system_prompt": {system_prompt}\n"user_prompt": {user_prompt}\n"generated": {generated}\n"""
+            entry:str = """\{"time": {time}, "user_id": {user_id}, "is_clear": {is_clear}
+"system_prompt": {system_prompt}\n"user_prompt": {user_prompt}\n"generated": {generated}\}\n"""
             with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
                 file.write(entry.format(time = int(time()),
                                         user_id = self.user_id,
