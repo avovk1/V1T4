@@ -36,21 +36,32 @@ class Chat():
                              "content":response})
 
         if DEBUG:
-            replacement_table:dict[str, str] = {
-                "{time}": str(int(time())),
-                "{user_id}": str(self.user_id),
-                "{user_prompt}": user_prompt,
-                "{is_clear}": str(False),
-                "{system_prompt}": self.system_prompt,
-                "{generated}": response
-            }
-            temp_entry:str = self.debug_log_entry
-            for old, new in replacement_table.items():
-                temp_entry = temp_entry.replace(old, new)
+            # replacement_table:dict[str, str] = {
+            #     "{time}": str(int(time())),
+            #     "{user_id}": str(self.user_id),
+            #     "{is_clear}": str(False),
+            #     "{user_prompt}": user_prompt,
+            #     "{system_prompt}": self.system_prompt,
+            #     "{generated}": response
+            # }
+            # temp_entry:str = self.debug_log_entry
+            # for old, new in replacement_table.items():
+            #     temp_entry = temp_entry.replace(old, new)
+            # with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
+            #     file.write(temp_entry)
+            # del temp_entry, replacement_table
+            entry:str = json.dumps({
+                    "time": int(time()),
+                    "user_id": self.user_id,
+                    "is_clear": False,
+                    "user_prompt": user_prompt,
+                    "system_prompt": self.system_prompt,
+                    "generated": response
+                }, ensure_ascii=False).replace("\"user_prompt\"", "\n  \"user_prompt\"")\
+                                      .replace("\"system_prompt\"", "\n  \"system_prompt\"")\
+                                      .replace("\"generated\"", "\n  \"generated\"") + "\n"
             with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
-                file.write(temp_entry)
-            del temp_entry, replacement_table
-
+                file.write(entry)
         return response
 
     def reset(self) -> None:

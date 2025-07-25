@@ -151,4 +151,8 @@ async def on_ready():
     cog_loader()
     print("Bot is connected!")
 
-bot.run(token)
+try:
+    bot.run(token)
+except KeyboardInterrupt:
+    print("Caught Ctrl+C!")
+    bot.close()
