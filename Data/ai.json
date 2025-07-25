@@ -2,5 +2,6 @@
     "address": "http://192.168.1.224:8000",
     "model_endpoint": "/v1/models",
     "inference_endpoint": "/v1/chat/completions",
-    "default_prompt": "You are helpful assistant."
+    "default_prompt": "You are helpful assistant.",
+    "debug_log_entry": ""
 }

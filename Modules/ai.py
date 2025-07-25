@@ -10,13 +10,14 @@ DEBUG = True
 
 class Chat():
     """Class that represents chat between user and bot"""
-    def __init__(self, user_id:int, system_prompt:str, debug_log_entry:str) -> None:
+    #def __init__(self, user_id:int, system_prompt:str, debug_log_entry:str) -> None:
+    def __init__(self, user_id:int, system_prompt:str) -> None:
         self.user_id:int = user_id
         self.default_prompt:str = system_prompt
         self.system_prompt:str = system_prompt
         self.dialogs:list[dict[str,str|int]] = [{"role":"system",
                                                  "content":self.system_prompt}]
-        self.debug_log_entry:str = debug_log_entry
+        #self.debug_log_entry:str = debug_log_entry
 
     def generate(self, address:str, model:str, user_prompt:str) -> str:
         """Generates an output based on user prompt
@@ -109,8 +110,7 @@ class Ai(commands.Cog):
         # just in case not initialized
         if ctx.author.id not in self.chats:
             self.chats[ctx.author.id] = Chat(ctx.author.id,
-                                             self.default_prompt,
-                                             self.debug_log_entry)
+                                             self.default_prompt)
         # work itself
         self.chats[ctx.author.id].reset()
         return await ctx.reply("Chat history had been reset, nya!")
@@ -126,8 +126,7 @@ class Ai(commands.Cog):
         # just in case not initialized
         if ctx.author.id not in self.chats:
             self.chats[ctx.author.id] = Chat(ctx.author.id,
-                                             self.default_prompt,
-                                             self.debug_log_entry)
+                                             self.default_prompt)
         # work itself
         self.chats[ctx.author.id].set_system_prompt(system_prompt)
         return await ctx.reply("System prompt had been changed, nya!")
@@ -142,8 +141,7 @@ class Ai(commands.Cog):
             return
         if message.author.id not in self.chats:
             self.chats[message.author.id] = Chat(message.author.id,
-                                                 self.default_prompt,
-                                                 self.debug_log_entry)
+                                                 self.default_prompt)
         async with message.channel.typing():
             reply:str = self.chats[message.author.id].generate(
                 self.address + self.inference_endpoint,
