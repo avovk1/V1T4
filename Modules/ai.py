@@ -37,10 +37,10 @@ class Chat():
 
         if DEBUG:
             replacement_table:dict[str, str] = {
-                "{time}": str(time()),
+                "{time}": str(int(time())),
                 "{user_id}": str(self.user_id),
                 "{user_prompt}": user_prompt,
-                "{is_clear}"
+                "{is_clear}": str(False),
                 "{system_prompt}": self.system_prompt,
                 "{generated}": response
             }
@@ -59,7 +59,7 @@ class Chat():
                          "content":self.system_prompt}]
 
     def set_system_prompt(self, prompt:str) -> None:
-        """Sets system propt to user defined, or default if none provided."""
+        """Sets system prompt to user defined, or default if none provided."""
         self.system_prompt = self.default_prompt if prompt == "default" else prompt
         self.reset()
 
@@ -151,21 +151,20 @@ class Ai(commands.Cog):
                 out_str:str
                 # Just for sake of right move - limiting amount of iterations
                 for _ in range(len(reply)):
-                    if len(reply) > 2000:
-                        temp_str = reply[:2000]
-                        index = temp_str.rfind("\n")
-                        # If there is no newlines!
-                        if index < 0:
-                            index = temp_str.rfind(" ")
-                        #If there is not even spaces!
-                        if index < 0:
-                            index = 2000
-                        # Breaking strings on found edge, hope this is okay to do it this way
-                        out_str = reply[:index]
-                        reply = reply[index:]
-                        await message.channel.send(out_str)
-                    else:
+                    if len(reply) < 2000:
                         break
+                    temp_str = reply[:2000]
+                    index = temp_str.rfind("\n")
+                    # If there is no newlines!
+                    if index < 0:
+                        index = temp_str.rfind(" ")
+                    #If there is not even spaces!
+                    if index < 0:
+                        index = 2000
+                    # Breaking strings on found edge, hope this is okay to do it this way
+                    out_str = reply[:index]
+                    reply = reply[index:]
+                    await message.channel.send(out_str)
         return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
