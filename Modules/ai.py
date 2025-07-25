@@ -46,7 +46,7 @@ class Chat():
             }
             temp_entry:str = self.debug_log_entry
             for old, new in replacement_table.items():
-                temp_entry.replace(old, new)
+                temp_entry = temp_entry.replace(old, new)
             with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
                 file.write(temp_entry)
             del temp_entry, replacement_table
@@ -57,13 +57,11 @@ class Chat():
         """Resets chat history."""
         self.dialogs = [{"role":"system",
                          "content":self.system_prompt}]
-        return
 
     def set_system_prompt(self, prompt:str) -> None:
         """Sets system propt to user defined, or default if none provided."""
         self.system_prompt = self.default_prompt if prompt == "default" else prompt
         self.reset()
-        return
 
 class Ai(commands.Cog):
     """
