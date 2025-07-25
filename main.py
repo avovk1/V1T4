@@ -137,8 +137,8 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
         else:
             return await ctx.reply("Okay, I need to be updated - contact owner pwease!")
     else:
-        if ctx.author.id in config["administrators"]:
-            return await ctx.reply("This function is to be used only by owner!"+
+        if ctx.author.id not in config["administrators"]:
+            return await ctx.reply("This function is to be used only by owner!\n"+
                     "In order to check whether I need update - use \"Meow, update check\"")
         Popen(["python", "updater.py"])
         print("Bot is disconnecting!")
