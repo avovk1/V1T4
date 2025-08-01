@@ -57,9 +57,10 @@ class Chat():
                     "user_prompt": user_prompt,
                     "system_prompt": self.system_prompt,
                     "generated": response
-                }, ensure_ascii=False).replace("\"user_prompt\"", "\n  \"user_prompt\"")\
-                                      .replace("\"system_prompt\"", "\n  \"system_prompt\"")\
-                                      .replace("\"generated\"", "\n  \"generated\"") + "\n"
+                }, ensure_ascii=False)\
+                    .replace("\"user_prompt\"", "\n  \"user_prompt\"")\
+                    .replace("\"system_prompt\"", "\n  \"system_prompt\"")\
+                    .replace("\"generated\"", "\n  \"generated\"") + "\n"
             with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
                 file.write(entry)
         return response
