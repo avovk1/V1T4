@@ -1,4 +1,5 @@
 """Updater for V1T4 bot, can be used to remotely push update without console"""
+import sys
 from subprocess import Popen
 from time import sleep
 import git
@@ -14,5 +15,7 @@ def check() -> bool:
 if __name__ == "__main__":
     sleep(10)
     repo.remotes[0].pull()
-    Popen(["python", "main.py"])
+    args:list = sys.argv
+    args[1] = "main.py"
     print("Update done!")
+    Popen(args)

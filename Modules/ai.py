@@ -61,8 +61,6 @@ class Ai(commands.Cog):
     """
 
     def __init__(self, bot:commands.Bot) -> None:
-        # ToDo: migration towards SQLite, since json is not a DB
-        # Kinda ironic from me, whom always said that "JSON is my DB"
         with open("Data/ai.json", "rt", encoding = "UTF-8") as file:
             data:dict = json.load(file)
             self.address:str = data["address"]
