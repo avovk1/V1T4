@@ -160,7 +160,7 @@ class Ai(commands.Cog):
                 index:int
                 out_str:str
                 # Just for sake of right move - limiting amount of iterations
-                for _ in range(len(reply)):
+                for _ in reply:
                     if len(reply) < 2000:
                         break
                     temp_str = reply[:2000]

@@ -155,4 +155,4 @@ try:
     bot.run(token)
 except KeyboardInterrupt:
     print("Caught Ctrl+C!")
-    bot.close()
+    _ = bot.close()
