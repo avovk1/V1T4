@@ -2,5 +2,6 @@
     "address": "http://192.168.1.224:8000",
     "model_endpoint": "/v1/models",
     "inference_endpoint": "/v1/chat/completions",
-    "default_prompt": "You are helpful assistant."
+    "default_prompt": "You are helpful assistant.",
+    "debug_log_entry": "{\"time\": {time}, \"user_id\": {user_id}, \"is_clear\": {is_clear},\n  \"user_prompt\": {user_prompt},\n  \"system_prompt\": {system_prompt},\n  \"generated\": {generated}}\n"
 }

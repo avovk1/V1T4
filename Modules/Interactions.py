@@ -1,7 +1,7 @@
 import json
 #import random
 
-#import discord
+import discord
 from discord.ext import commands
 
 class Interactions(commands.Cog):
@@ -18,6 +18,11 @@ class Interactions(commands.Cog):
 
     def cog_unload(self) -> None:
         print("goodbye world!")
+        
+    class MyView(discord.ui.View):
+        @discord.ui.button(label="Button 1", row=0, style=discord.ButtonStyle.primary)
+        async def first_button_callback(self, button, interaction):
+            await interaction.response.send_message("You pressed me!")
 
 def setup(bot:commands.Bot) -> None:
     """boilerplate"""

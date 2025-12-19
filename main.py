@@ -123,12 +123,12 @@ async def reload(ctx:commands.Context, name:str|None = None) -> discord.Message|
     if author.id in config["administrators"]:
         return await ctx.reply(cog_unloader(name) + "\n" + cog_loader(name))
 
-@bot.command(name="update", hidden=True)
+@bot.command(name="update")
 async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
     """
     Function to check for update, apply update, or update if there is new version. Usage:\n
     No argument - Force updates, only for MEEE\n
-    "check" - checks repo, and reports if there is update\n
+    "check" - checks repo, and reports if there is update
     """
     if action == "check":
         if updater.check():
@@ -151,4 +151,8 @@ async def on_ready():
     cog_loader()
     print("Bot is connected!")
 
-bot.run(token)
+try:
+    bot.run(token)
+except KeyboardInterrupt:
+    print("Caught Ctrl+C!")
+    bot.close()

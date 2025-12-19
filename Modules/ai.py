@@ -1,5 +1,5 @@
 """V1T4 Cog for interfacing with backend-hosted LLM"""
-
+# pylint: disable=line-too-long
 import json
 from time import time
 from urllib3 import BaseHTTPResponse, request
@@ -10,18 +10,19 @@ DEBUG = True
 
 class Chat():
     """Class that represents chat between user and bot"""
-    def __init__(self, user_id:int, system_prompt:str) -> None:
+    def __init__(self, user_id:int, system_prompt:str, debug_log_entry:str) -> None:
         self.user_id:int = user_id
         self.default_prompt:str = system_prompt
         self.system_prompt:str = system_prompt
         self.dialogs:list[dict[str,str|int]] = [{"role":"system",
                                                  "content":self.system_prompt}]
+        self.debug_log_entry:str = debug_log_entry
+
     def generate(self, address:str, model:str, user_prompt:str) -> str:
         """Generates an output based on user prompt
         Returns string to print, also saves into instance"""
         self.dialogs.append({"role":"user",
                              "content":user_prompt})
-
         r = request(
             method = "POST",
             url = address,
@@ -35,25 +36,44 @@ class Chat():
                              "content":response})
 
         if DEBUG:
+            # replacement_table:dict[str, str] = {
+            #     "{time}": str(int(time())),
+            #     "{user_id}": str(self.user_id),
+            #     "{is_clear}": str(False),
+            #     "{user_prompt}": user_prompt,
+            #     "{system_prompt}": self.system_prompt,
+            #     "{generated}": response
+            # }
+            # temp_entry:str = self.debug_log_entry
+            # for old, new in replacement_table.items():
+            #     temp_entry = temp_entry.replace(old, new)
+            # with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
+            #     file.write(temp_entry)
+            # del temp_entry, replacement_table
+            entry:str = json.dumps({
+                    "time": int(time()),
+                    "user_id": self.user_id,
+                    "is_clear": False,
+                    "user_prompt": user_prompt,
+                    "system_prompt": self.system_prompt,
+                    "generated": response
+                }, ensure_ascii=False)\
+                    .replace("\"user_prompt\"", "\n  \"user_prompt\"")\
+                    .replace("\"system_prompt\"", "\n  \"system_prompt\"")\
+                    .replace("\"generated\"", "\n  \"generated\"") + "\n"
             with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
-                file.write(json.dumps({"time":int(time()),
-                                       "user_id":self.user_id,
-                                       "user_prompt":user_prompt,
-                                       "system_prompt":self.system_prompt,
-                                       "generated":response}, ensure_ascii=False)+"\n")
-
+                file.write(entry)
         return response
 
     def reset(self) -> None:
         """Resets chat history."""
         self.dialogs = [{"role":"system",
                          "content":self.system_prompt}]
-        return
 
     def set_system_prompt(self, prompt:str) -> None:
-        """Sets system propt to user defined, or default if none provided."""
+        """Sets system prompt to user defined, or default if none provided."""
         self.system_prompt = self.default_prompt if prompt == "default" else prompt
-        return
+        self.reset()
 
 class Ai(commands.Cog):
     """
@@ -67,6 +87,7 @@ class Ai(commands.Cog):
             self.model_endpoint:str = data["model_endpoint"]
             self.inference_endpoint:str = data["inference_endpoint"]
             self.default_prompt:str = data["default_prompt"]
+            self.debug_log_entry:str = data["debug_log_entry"]
         del data
         r:BaseHTTPResponse = request(
             method = "GET",
@@ -82,7 +103,7 @@ class Ai(commands.Cog):
     def cog_unload(self) -> None:
         print("goodbye world!")
 
-    @commands.command(name = "History_reset")
+    @commands.command(name = "clear")
     async def history_reset(self, ctx:commands.Context) -> discord.Message|None:
         """Wrapper to reset chat history"""
         # validating input
@@ -90,12 +111,14 @@ class Ai(commands.Cog):
             return
         # just in case not initialized
         if ctx.author.id not in self.chats:
-            self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
+            self.chats[ctx.author.id] = Chat(ctx.author.id,
+                                             self.default_prompt,
+                                             self.debug_log_entry)
         # work itself
         self.chats[ctx.author.id].reset()
         return await ctx.reply("Chat history had been reset, nya!")
 
-    @commands.command(name = "edit_system_prompt")
+    @commands.command(name = "set_prompt")
     async def edit_system_prompt(self,
                                  ctx:commands.Context,
                                  *, system_prompt:str) -> discord.Message|None:
@@ -105,7 +128,9 @@ class Ai(commands.Cog):
             return
         # just in case not initialized
         if ctx.author.id not in self.chats:
-            self.chats[ctx.author.id] = Chat(ctx.author.id, self.default_prompt)
+            self.chats[ctx.author.id] = Chat(ctx.author.id,
+                                             self.default_prompt,
+                                             self.debug_log_entry)
         # work itself
         self.chats[ctx.author.id].set_system_prompt(system_prompt)
         return await ctx.reply("System prompt had been changed, nya!")
@@ -119,7 +144,9 @@ class Ai(commands.Cog):
         or message.content.startswith("Meow, "):
             return
         if message.author.id not in self.chats:
-            self.chats[message.author.id] = Chat(message.author.id, self.default_prompt)
+            self.chats[message.author.id] = Chat(message.author.id,
+                                                 self.default_prompt,
+                                                 self.debug_log_entry)
         async with message.channel.typing():
             reply:str = self.chats[message.author.id].generate(
                 self.address + self.inference_endpoint,
@@ -134,21 +161,20 @@ class Ai(commands.Cog):
                 out_str:str
                 # Just for sake of right move - limiting amount of iterations
                 for _ in range(len(reply)):
-                    if len(reply) > 2000:
-                        temp_str = reply[:2000]
-                        index = temp_str.rfind("\n")
-                        # If there is no newlines!
-                        if index < 0:
-                            index = temp_str.rfind(" ")
-                        #If there is not even spaces!
-                        if index < 0:
-                            index = 2000
-                        # Breaking strings on found edge, hope this is okay to do it this way
-                        out_str = reply[:index]
-                        reply = reply[index:]
-                        await message.channel.send(out_str)
-                    else:
+                    if len(reply) < 2000:
                         break
+                    temp_str = reply[:2000]
+                    index = temp_str.rfind("\n")
+                    # If there is no newlines!
+                    if index < 0:
+                        index = temp_str.rfind(" ")
+                    #If there is not even spaces!
+                    if index < 0:
+                        index = 2000
+                    # Breaking strings on found edge, hope this is okay to do it this way
+                    out_str = reply[:index]
+                    reply = reply[index:]
+                    await message.channel.send(out_str)
         return await message.channel.send(reply)
 
 def setup(bot:commands.Bot) -> None:
