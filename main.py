@@ -133,10 +133,12 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
     if action == "check":
         if updater.check():
             return await ctx.reply("I am up to date!")
-        else:
+        elif ctx.author.id != config["owner"]:
             return await ctx.reply("Okay, I need to be updated - contact owner pwease!")
+        else:
+            return await ctx.reply("Update me, neow!")
     else:
-        if ctx.author.id != 579704749277052938:
+        if ctx.author.id != config["owner"]:
             return await ctx.reply("This function is to be used only by owner!")
         args = sys.argv
         args[1] = "updater.py"
@@ -144,6 +146,7 @@ async def update(ctx:commands.Context, action:str|None) -> discord.Message|None:
         print("Bot is disconnecting!")
         await bot.close()
         print("Bot is disconnected!")
+        exit(0)
 
 @bot.event
 async def on_ready():

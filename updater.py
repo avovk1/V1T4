@@ -9,7 +9,7 @@ assert not repo.bare
 remote = repo.remotes[0]
 
 def check() -> bool:
-    """If the local repo is up to date"""
+    """Check if the local repo is up to date"""
     return remote.fetch()[0].flags//4 == 1
 
 if __name__ == "__main__":
@@ -18,4 +18,5 @@ if __name__ == "__main__":
     args:list = sys.argv
     args[1] = "main.py"
     print("Update done!")
-    Popen(args)
+    Popen(args = args)
+    exit(0)
