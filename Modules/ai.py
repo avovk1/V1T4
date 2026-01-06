@@ -10,13 +10,14 @@ DEBUG = True
 
 class Chat():
     """Class that represents chat between user and bot"""
-    def __init__(self, user_id:int, system_prompt:str, debug_log_entry:str) -> None:
+    def __init__(self, user_id:int, system_prompt:str, log_entry:str, display_name:str|None=None) -> None:
         self.user_id:int = user_id
+        self.display_name:str|None = display_name
         self.default_prompt:str = system_prompt
         self.system_prompt:str = system_prompt
         self.dialogs:list[dict[str,str|int]] = [{"role":"system",
                                                  "content":self.system_prompt}]
-        self.debug_log_entry:str = debug_log_entry
+        self.log_entry:str = log_entry
 
     def generate(self, address:str, model:str, user_prompt:str) -> str:
         """Generates an output based on user prompt
@@ -35,40 +36,34 @@ class Chat():
         self.dialogs.append({"role":"assistant",
                              "content":response})
 
-        if DEBUG:
-            # replacement_table:dict[str, str] = {
-            #     "{time}": str(int(time())),
-            #     "{user_id}": str(self.user_id),
-            #     "{is_clear}": str(False),
-            #     "{user_prompt}": user_prompt,
-            #     "{system_prompt}": self.system_prompt,
-            #     "{generated}": response
-            # }
-            # temp_entry:str = self.debug_log_entry
-            # for old, new in replacement_table.items():
-            #     temp_entry = temp_entry.replace(old, new)
-            # with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
-            #     file.write(temp_entry)
-            # del temp_entry, replacement_table
-            entry:str = json.dumps({
-                    "time": int(time()),
-                    "user_id": self.user_id,
-                    "is_clear": False,
-                    "user_prompt": user_prompt,
-                    "system_prompt": self.system_prompt,
-                    "generated": response
-                }, ensure_ascii=False)\
-                    .replace("\"user_prompt\"", "\n  \"user_prompt\"")\
-                    .replace("\"system_prompt\"", "\n  \"system_prompt\"")\
-                    .replace("\"generated\"", "\n  \"generated\"") + "\n"
-            with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
-                file.write(entry)
+        entry:str = self.log_entry.format(
+            time = int(time()),
+            is_clear = str(False),
+            user_id = self.user_id,
+            display_name = self.display_name,
+            user_prompt = user_prompt,
+            system_prompt = self.system_prompt,
+            generated = response
+        )
+        with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
+            file.write(entry)
         return response
 
     def reset(self) -> None:
         """Resets chat history."""
         self.dialogs = [{"role":"system",
                          "content":self.system_prompt}]
+        entry:str = self.log_entry.format(
+            time = int(time()),
+            is_clear = str(False),
+            user_id = self.user_id,
+            display_name = self.display_name,
+            user_prompt = None,
+            system_prompt = None,
+            generated = None
+        )
+        with open("AI_DEBUG_LOG.log", "at", encoding="UTF-8") as file:
+            file.write(entry)
 
     def set_system_prompt(self, prompt:str) -> None:
         """Sets system prompt to user defined, or default if none provided."""
